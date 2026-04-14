@@ -1010,6 +1010,9 @@ function TeamsPreviewModal({ emp, sticker, message, onConfirm, onCancel }) {
             </div>
           </div>
         </div>
+        <div style={{ padding: "0 22px 10px", fontSize: "0.75rem", color: "#64748b", lineHeight: 1.5 }}>
+          {"\uD83D\uDCCB"} The message will be copied to your clipboard. If Teams doesn't auto-fill it, just press <strong>Ctrl+V</strong> to paste.
+        </div>
         <div className="modal-actions">
           <button className="modal-btn secondary" onClick={onCancel}>Cancel</button>
           <button className="modal-btn primary" onClick={onConfirm} style={{ background: "linear-gradient(135deg, #6d28d9, #7c3aed)" }}>{"\uD83D\uDFEA"} Send via Teams & Award Sticker</button>
@@ -1175,7 +1178,19 @@ function App({ onLogout }) {
 
     if (withTeams && selectedEmp.email) {
       const teamsMsg = selectedStk.emoji + " " + selectedStk.label + "!\n\nHi " + firstName + ", you've been recognised with a \"" + selectedStk.label + "\" sticker for your outstanding work!" + (message.trim() ? '\n\n"' + message.trim() + '"' : "") + "\n\nKeep it up! \uD83C\uDF89";
-      const teamsUrl = "https://teams.microsoft.com/l/chat/0/0?users=" + encodeURIComponent(selectedEmp.email) + "&message=" + encodeURIComponent(teamsMsg);
+      const teamsUrl = "https://teams.microsoft.com/l/chat/0/0?users=" + encodeURIComponent(selectedEmp.email) + "&topicName=" + encodeURIComponent(selectedStk.label) + "&message=" + encodeURIComponent(teamsMsg);
+      // Copy message to clipboard as fallback (New Teams may ignore &message param)
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(teamsMsg).then(() => {
+          setToasts(prev => [...prev, {
+            id: Date.now() + 1,
+            emoji: "\uD83D\uDCCB",
+            label: "Message copied!",
+            recipient: "Paste (Ctrl+V) in Teams chat",
+            teamsSent: false,
+          }]);
+        }).catch(() => {});
+      }
       window.open(teamsUrl, "_blank");
     }
 
