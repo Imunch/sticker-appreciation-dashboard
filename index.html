@@ -473,7 +473,25 @@
   .activity-emoji img.emoji { height: 1.4rem; width: 1.4rem; }
   .toast-emoji img.emoji { height: 2rem; width: 2rem; }
   .add-icon img.emoji { height: 1.5rem; width: 1.5rem; }
+  .emoji-pick img.emoji { height: 1.4rem; width: 1.4rem; vertical-align: middle; }
+  .emoji-tab img.emoji { height: 1.1rem; width: 1.1rem; vertical-align: middle; }
   .header-stat .num img.emoji { height: 1.8rem; width: 1.8rem; }
+
+  /* Emoji Picker */
+  .emoji-picker { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 8px; background: #fafbff; }
+  .emoji-picker-tabs { display: flex; border-bottom: 1px solid var(--border); background: #f0f2f5; overflow-x: auto; }
+  .emoji-picker-tabs::-webkit-scrollbar { height: 0; }
+  .emoji-tab { padding: 8px 10px; cursor: pointer; font-size: 1.1rem; border: none; background: none; opacity: 0.5; transition: all 0.15s; flex-shrink: 0; border-bottom: 2px solid transparent; }
+  .emoji-tab:hover { opacity: 0.8; background: rgba(79,70,229,0.05); }
+  .emoji-tab.active { opacity: 1; border-bottom-color: var(--primary); background: white; }
+  .emoji-picker-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; padding: 8px; max-height: 200px; overflow-y: auto; }
+  .emoji-picker-grid::-webkit-scrollbar { width: 6px; }
+  .emoji-picker-grid::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  .emoji-pick { font-size: 1.4rem; padding: 6px; cursor: pointer; border-radius: 8px; border: none; background: none; transition: all 0.12s; text-align: center; line-height: 1; }
+  .emoji-pick:hover { background: var(--primary-light); transform: scale(1.2); }
+  .emoji-pick.selected { background: var(--primary-light); outline: 2px solid var(--primary); }
+  .emoji-search { width: 100%; padding: 8px 12px; border: none; border-bottom: 1px solid var(--border); font-size: 0.85rem; outline: none; background: white; }
+  .emoji-search:focus { background: #fefffe; }
 
   /* Consent banner */
   .consent-banner {
@@ -697,7 +715,14 @@ const DEFAULT_STICKERS = [
   { id: "heart",     emoji: "\uD83D\uDC9C", label: "Heart of Gold",     category: "fun" },
 ];
 
-const EMOJI_SUGGESTIONS = ["\uD83C\uDF1F","\uD83D\uDE4C","\uD83D\uDC4F","\uD83E\uDDD1\u200D\uD83D\uDE80","\uD83C\uDF08","\u26A1","\uD83D\uDCAB","\uD83C\uDF40","\uD83D\uDC51","\uD83C\uDFA8","\uD83E\uDD29","\uD83D\uDE0E","\uD83E\uDDB8","\uD83C\uDF97\uFE0F","\u2728","\uD83D\uDCDA","\uD83D\uDD27","\uD83C\uDFAF","\uD83D\uDEE1\uFE0F","\uD83C\uDF1E"];
+const EMOJI_CATEGORIES = [
+  { icon: "\u2B50", name: "Awards", emojis: ["\u2B50","\uD83C\uDFC6","\uD83C\uDF96\uFE0F","\uD83E\uDD47","\uD83E\uDD48","\uD83E\uDD49","\uD83C\uDFC5","\uD83C\uDF1F","\u2728","\uD83D\uDCAB","\uD83C\uDF89","\uD83C\uDF8A","\uD83C\uDF97\uFE0F","\uD83D\uDC51","\uD83D\uDC8E","\uD83D\uDD2E","\uD83C\uDFAF","\uD83C\uDF08","\uD83C\uDF1E","\u26A1"] },
+  { icon: "\uD83D\uDE00", name: "Smileys", emojis: ["\uD83D\uDE00","\uD83D\uDE03","\uD83D\uDE04","\uD83D\uDE01","\uD83D\uDE06","\uD83D\uDE0D","\uD83E\uDD29","\uD83D\uDE0E","\uD83E\uDD13","\uD83E\uDD17","\uD83E\uDD2D","\uD83D\uDE4C","\uD83D\uDC4F","\uD83D\uDC4D","\uD83D\uDCAA","\u270C\uFE0F","\uD83E\uDD1D","\uD83D\uDE4F","\uD83E\uDEF6","\u2764\uFE0F"] },
+  { icon: "\uD83D\uDCA1", name: "Work", emojis: ["\uD83D\uDCA1","\uD83E\uDDE0","\uD83D\uDCDA","\uD83D\uDCBB","\uD83D\uDCBC","\uD83D\uDCC8","\uD83D\uDCCA","\uD83D\uDD27","\u2699\uFE0F","\uD83D\uDEE0\uFE0F","\uD83D\uDD0D","\uD83D\uDCDD","\u270F\uFE0F","\uD83D\uDCC2","\uD83D\uDCCB","\uD83D\uDEE1\uFE0F","\uD83D\uDD11","\uD83D\uDCE7","\uD83D\uDCDE","\uD83D\uDCC5"] },
+  { icon: "\uD83D\uDE80", name: "Objects", emojis: ["\uD83D\uDE80","\uD83D\uDD25","\uD83D\uDCA5","\uD83C\uDFA8","\uD83C\uDFB5","\uD83C\uDFAC","\uD83C\uDFAE","\uD83E\uDDB8","\uD83E\uDDD1\u200D\uD83D\uDE80","\uD83C\uDF40","\uD83C\uDF3B","\uD83C\uDF3A","\uD83C\uDF32","\uD83C\uDF35","\u2615","\uD83C\uDF54","\uD83C\uDF55","\uD83C\uDF70","\uD83C\uDF82","\uD83E\uDDC1"] },
+  { icon: "\uD83D\uDC36", name: "Animals", emojis: ["\uD83D\uDC36","\uD83D\uDC31","\uD83E\uDD81","\uD83D\uDC3B","\uD83D\uDC3C","\uD83D\uDC28","\uD83E\uDD8A","\uD83D\uDC30","\uD83E\uDD87","\uD83E\uDD89","\uD83E\uDD85","\uD83E\uDD84","\uD83D\uDC1D","\uD83E\uDD8B","\uD83D\uDC22","\uD83D\uDC19","\uD83D\uDC33","\uD83D\uDC2C","\uD83E\uDD88","\uD83D\uDC0D"] },
+  { icon: "\u2764\uFE0F", name: "Symbols", emojis: ["\u2764\uFE0F","\uD83E\uDE77","\uD83D\uDC9C","\uD83D\uDC99","\uD83D\uDC9A","\uD83D\uDC9B","\uD83E\uDDE1","\uD83D\uDC96","\uD83D\uDC9D","\uD83D\uDD4A\uFE0F","\u262E\uFE0F","\u267E\uFE0F","\u2705","\u274C","\u2753","\u2757","\uD83D\uDCAF","\uD83D\uDD1D","\uD83C\uDD95","\uD83C\uDD99"] },
+];
 
 const STORAGE_KEY = "sticker_dashboard_data";
 
@@ -855,12 +880,49 @@ function AddEmployeeModal({ onAdd, onCancel }) {
   );
 }
 
+function EmojiPicker({ selected, onSelect }) {
+  const [activeTab, setActiveTab] = useState(0);
+  const [search, setSearch] = useState("");
+
+  const filteredEmojis = search.trim()
+    ? EMOJI_CATEGORIES.flatMap(c => c.emojis)
+    : EMOJI_CATEGORIES[activeTab].emojis;
+
+  return (
+    <div className="emoji-picker">
+      <input className="emoji-search" placeholder="Search or paste any emoji..."
+        value={search} onChange={e => {
+          setSearch(e.target.value);
+          if (e.target.value.trim() && /\p{Emoji}/u.test(e.target.value.trim())) {
+            onSelect(e.target.value.trim());
+          }
+        }} />
+      {!search.trim() && (
+        <div className="emoji-picker-tabs">
+          {EMOJI_CATEGORIES.map((cat, i) => (
+            <button key={cat.name} className={"emoji-tab" + (activeTab === i ? " active" : "")}
+              onClick={() => setActiveTab(i)} title={cat.name}>
+              {cat.icon}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="emoji-picker-grid">
+        {filteredEmojis.map(em => (
+          <button key={em} className={"emoji-pick" + (selected === em ? " selected" : "")}
+            onClick={() => onSelect(em)} title={em}>
+            {em}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function AddStickerModal({ onAdd, onCancel }) {
   const [emoji, setEmoji] = useState("");
   const [label, setLabel] = useState("");
-  const nameRef = useRef(null);
-
-  useEffect(() => { nameRef.current && nameRef.current.focus(); }, []);
+  const labelRef = useRef(null);
 
   const canAdd = emoji.trim().length > 0 && label.trim().length >= 2;
 
@@ -881,30 +943,27 @@ function AddStickerModal({ onAdd, onCancel }) {
 
   return (
     <div className="modal-overlay" onClick={onCancel}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 460 }}>
         <div className="modal-header">
           <h3>{"\uD83C\uDF1F"} Create New Sticker</h3>
           <button className="modal-close" onClick={onCancel}>{"\u2715"}</button>
         </div>
         <div className="modal-body">
           <div className="form-group">
-            <label>Emoji *</label>
-            <input ref={nameRef} className="form-input" placeholder="Paste or type an emoji..."
-              value={emoji} onChange={e => setEmoji(e.target.value)} onKeyDown={handleKeyDown}
-              style={{ fontSize: "1.5rem", textAlign: "center" }} />
-            <div className="form-hint" style={{ marginTop: 8 }}>
-              Pick one: {EMOJI_SUGGESTIONS.map(em => (
-                <span key={em} onClick={() => setEmoji(em)}
-                  style={{ cursor: "pointer", fontSize: "1.3rem", marginRight: 4, opacity: emoji === em ? 1 : 0.6, transition: "opacity 0.15s" }}
-                  onMouseOver={e => e.target.style.opacity = 1}
-                  onMouseOut={e => { if (emoji !== em) e.target.style.opacity = 0.6; }}
-                >{em}</span>
-              ))}
-            </div>
+            <label>Choose an Emoji *</label>
+            {emoji && (
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, padding: "8px 12px", background: "#e0e7ff", borderRadius: 10 }}>
+                <span style={{ fontSize: "1.8rem" }}>{emoji}</span>
+                <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--primary)" }}>Selected</span>
+                <button onClick={() => setEmoji("")}
+                  style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", fontSize: "0.8rem", color: "#64748b" }}>{"\u2715"} Clear</button>
+              </div>
+            )}
+            <EmojiPicker selected={emoji} onSelect={(em) => { setEmoji(em); if (labelRef.current) labelRef.current.focus(); }} />
           </div>
           <div className="form-group">
             <label>Sticker Name *</label>
-            <input className="form-input" placeholder="e.g. Problem Solver, Quick Learner..."
+            <input ref={labelRef} className="form-input" placeholder="e.g. Problem Solver, Quick Learner..."
               value={label} onChange={e => setLabel(e.target.value)} onKeyDown={handleKeyDown} />
           </div>
           {emoji && label.trim().length >= 2 && (
