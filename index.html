@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sticker Appreciation Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #f0f2f5;
+    --card: #ffffff;
+    --primary: #4f46e5;
+    --primary-light: #e0e7ff;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --success: #10b981;
+    --gold: #f59e0b;
+    --silver: #94a3b8;
+    --bronze: #d97706;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(79,70,229,0.3);
+  }
+  .header h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+  .header p { font-size: 0.9rem; opacity: 0.85; margin-top: 4px; }
+  .header-stats { display: flex; gap: 28px; }
+  .header-stat { text-align: center; }
+  .header-stat .num { font-size: 1.8rem; font-weight: 800; }
+  .header-stat .label { font-size: 0.75rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 24px;
+    padding: 24px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .employee-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+    padding: 20px;
+  }
+  .employee-card {
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  .employee-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  .employee-card.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+  .employee-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 10px;
+    font-weight: 700;
+    color: white;
+  }
+  .employee-name { font-weight: 600; font-size: 0.9rem; }
+  .employee-role { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+  .employee-email { font-size: 0.7rem; color: var(--text-muted); margin-top: 1px; opacity: 0.7; }
+  .employee-sticker-count {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  /* Add employee card */
+  .add-employee-card {
+    border: 2px dashed #c7d2fe;
+    border-radius: 14px;
+    padding: 18px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+    background: #fafbff;
+  }
+  .add-employee-card:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    transform: translateY(-2px);
+  }
+  .add-icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: #e0e7ff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+    font-weight: 300;
+  }
+  .add-label { font-size: 0.85rem; font-weight: 600; color: var(--primary); }
+
+  /* Delete button on employee cards */
+  .delete-btn {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: #cbd5e1;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    opacity: 0;
+  }
+  .employee-card:hover .delete-btn { opacity: 1; }
+  .delete-btn:hover { background: #fee2e2; color: #ef4444; }
+
+  .sticker-section { padding: 20px; }
+  .sticker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+  }
+  .sticker-btn {
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+    font-family: inherit;
+  }
+  .sticker-btn:hover {
+    border-color: var(--primary);
+    transform: scale(1.05);
+    box-shadow: var(--shadow);
+  }
+  .sticker-btn.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+  .sticker-emoji { font-size: 2rem; display: block; margin-bottom: 6px; }
+  .sticker-label { font-size: 0.75rem; font-weight: 600; color: var(--text); }
+
+  .message-section { padding: 0 20px 20px; }
+  .message-input, .form-input {
+    width: 100%;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    resize: none;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .message-input:focus, .form-input:focus { border-color: var(--primary); }
+  .message-input::placeholder, .form-input::placeholder { color: #b0b8c4; }
+
+  .send-section { padding: 0 20px 22px; }
+  .send-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+  }
+  .send-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(79,70,229,0.4);
+  }
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+  .leaderboard-list { padding: 10px 20px 18px; }
+  .leaderboard-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .leaderboard-item:last-child { border-bottom: none; }
+  .lb-rank {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 800;
+    flex-shrink: 0;
+  }
+  .lb-rank.gold { background: #fef3c7; color: #b45309; }
+  .lb-rank.silver { background: #f1f5f9; color: #475569; }
+  .lb-rank.bronze { background: #fef3c7; color: #92400e; }
+  .lb-rank.normal { background: #f1f5f9; color: #64748b; }
+  .lb-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+    color: white;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .lb-info { flex: 1; min-width: 0; }
+  .lb-name { font-weight: 600; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lb-stickers { font-size: 0.85rem; font-weight: 700; color: var(--primary); }
+
+  .activity-list { padding: 10px 20px 18px; max-height: 380px; overflow-y: auto; }
+  .activity-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-emoji { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+  .activity-text { font-size: 0.82rem; color: var(--text); line-height: 1.45; }
+  .activity-text strong { font-weight: 700; }
+  .activity-time { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; }
+  .activity-msg { font-size: 0.78rem; color: var(--text-muted); font-style: italic; margin-top: 2px; }
+
+  .toast-container {
+    position: fixed; top: 24px; right: 24px; z-index: 1000;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .toast {
+    background: white;
+    border-radius: 14px;
+    padding: 16px 22px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    display: flex; align-items: center; gap: 12px;
+    animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    min-width: 300px;
+  }
+  .toast.leaving { animation: slideOut 0.3s ease forwards; }
+  .toast-emoji { font-size: 2rem; }
+  .toast-text { font-weight: 600; font-size: 0.9rem; }
+  .toast-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+  @keyframes slideIn {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(120%); opacity: 0; }
+  }
+
+  .confetti-container {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 999;
+  }
+  .confetti-piece {
+    position: absolute;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    animation: confettiFall 1.5s ease-out forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+    100% { transform: translateY(600px) rotate(720deg) scale(0); opacity: 0; }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+  }
+  .empty-state .icon { font-size: 2.5rem; margin-bottom: 8px; }
+
+  /* Email toggle */
+  .delivery-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 0 20px 6px;
+  }
+  .toggle-track {
+    width: 44px; height: 24px;
+    border-radius: 12px;
+    background: #cbd5e1;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle-track.on { background: var(--primary); }
+  .toggle-knob {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+    top: 2px; left: 2px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle-track.on .toggle-knob { transform: translateX(20px); }
+  .toggle-label { font-size: 0.85rem; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 6px; }
+  .toggle-sub { font-size: 0.75rem; color: var(--text-muted); }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1001;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: white;
+    border-radius: 20px;
+    width: 520px;
+    max-width: 92vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    overflow: hidden;
+    animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes modalIn {
+    from { transform: scale(0.9) translateY(20px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-header h3 { font-size: 1rem; font-weight: 700; }
+  .modal-close {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: #f1f5f9;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted);
+    transition: background 0.15s;
+  }
+  .modal-close:hover { background: #e2e8f0; }
+  .modal-body { padding: 24px; }
+  .modal-actions {
+    padding: 16px 24px 22px;
+    display: flex; gap: 10px; justify-content: flex-end;
+  }
+  .modal-btn {
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+  }
+  .modal-btn.secondary { background: #f1f5f9; color: var(--text); }
+  .modal-btn.secondary:hover { background: #e2e8f0; }
+  .modal-btn.primary {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+  }
+  .modal-btn.primary:hover { box-shadow: 0 4px 14px rgba(79,70,229,0.4); }
+  .modal-btn.primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Email preview */
+  .email-preview {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
+  .email-preview .ep-to { color: var(--text-muted); margin-bottom: 4px; }
+  .email-preview .ep-subject { font-weight: 700; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .email-preview .ep-sticker { font-size: 3.5rem; text-align: center; margin: 16px 0; }
+  .email-preview .ep-badge { text-align: center; font-size: 1.1rem; font-weight: 800; color: var(--primary); margin-bottom: 16px; }
+  .email-preview .ep-msg {
+    background: white; border-radius: 8px; padding: 12px 14px;
+    border: 1px solid var(--border); margin: 12px 0;
+    font-style: italic; color: var(--text-muted);
+  }
+
+  .teams-badge {
+    display: inline-block;
+    font-size: 0.65rem; font-weight: 700;
+    padding: 2px 7px; border-radius: 6px;
+    margin-left: 6px; vertical-align: middle;
+    background: #ede9fe; color: #7c3aed;
+  }
+
+  /* Form fields */
+  .form-group { margin-bottom: 14px; }
+  .form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .form-group .form-input { margin: 0; }
+  .form-hint { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+
+  /* Twemoji sizing */
+  img.emoji {
+    height: 1em;
+    width: 1em;
+    margin: 0 0.05em 0 0.1em;
+    vertical-align: -0.1em;
+    display: inline-block;
+  }
+  .sticker-emoji img.emoji { height: 2rem; width: 2rem; vertical-align: middle; }
+  .ep-sticker img.emoji { height: 3.5rem; width: 3.5rem; }
+  .activity-emoji img.emoji { height: 1.4rem; width: 1.4rem; }
+  .toast-emoji img.emoji { height: 2rem; width: 2rem; }
+  .add-icon img.emoji { height: 1.5rem; width: 1.5rem; }
+  .header-stat .num img.emoji { height: 1.8rem; width: 1.8rem; }
+
+  /* Consent banner */
+  .consent-banner {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: white;
+    border-top: 2px solid var(--primary);
+    padding: 20px 40px;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+    z-index: 1002;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .consent-text { flex: 1; font-size: 0.82rem; line-height: 1.5; color: var(--text); }
+  .consent-text strong { font-weight: 700; }
+  .consent-actions { display: flex; gap: 10px; flex-shrink: 0; }
+  .consent-btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .consent-btn.accept {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+  }
+  .consent-btn.accept:hover { box-shadow: 0 4px 14px rgba(79,70,229,0.4); }
+  .consent-btn.decline { background: #f1f5f9; color: var(--text); }
+  .consent-btn.decline:hover { background: #e2e8f0; }
+
+  /* Data management section in sidebar */
+  .data-mgmt { padding: 16px 20px; }
+  .data-btn {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: white;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .data-btn:hover { background: #f8fafc; border-color: #cbd5e1; }
+  .data-btn.danger { color: #ef4444; border-color: #fecaca; }
+  .data-btn.danger:hover { background: #fef2f2; border-color: #ef4444; }
+  .data-info { font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; margin-top: 6px; }
+
+  /* Attribution footer */
+  .attribution {
+    text-align: center;
+    padding: 18px 20px 22px;
+    font-size: 0.7rem;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+  .attribution a { color: #6366f1; text-decoration: none; }
+  .attribution a:hover { text-decoration: underline; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; padding: 16px; }
+    .header { padding: 20px; flex-direction: column; gap: 16px; text-align: center; }
+    .employee-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useCallback, useRef } = React;
+
+const AVATAR_COLORS = [
+  "#6366f1","#8b5cf6","#ec4899","#14b8a6","#f97316",
+  "#06b6d4","#e11d48","#059669","#d946ef","#0ea5e9",
+  "#84cc16","#f43f5e","#a855f7","#eab308","#22d3ee"
+];
+
+const DEFAULT_STICKERS = [
+  { id: "star",      emoji: "\u2B50",       label: "Star Player",       category: "fun" },
+  { id: "trophy",    emoji: "\uD83C\uDFC6", label: "Top Achiever",      category: "professional" },
+  { id: "fire",      emoji: "\uD83D\uDD25", label: "On Fire!",          category: "fun" },
+  { id: "muscle",    emoji: "\uD83D\uDCAA", label: "Powerhouse",        category: "fun" },
+  { id: "target",    emoji: "\uD83C\uDFAF", label: "Bullseye",          category: "professional" },
+  { id: "rocket",    emoji: "\uD83D\uDE80", label: "Rocketing Up",      category: "fun" },
+  { id: "gem",       emoji: "\uD83D\uDC8E", label: "Absolute Gem",      category: "fun" },
+  { id: "brain",     emoji: "\uD83E\uDDE0", label: "Big Brain Move",    category: "fun" },
+  { id: "medal",     emoji: "\uD83C\uDF96\uFE0F", label: "Above & Beyond", category: "professional" },
+  { id: "handshake", emoji: "\uD83E\uDD1D", label: "Team Spirit",       category: "professional" },
+  { id: "light",     emoji: "\uD83D\uDCA1", label: "Innovator",         category: "professional" },
+  { id: "heart",     emoji: "\uD83D\uDC9C", label: "Heart of Gold",     category: "fun" },
+];
+
+const EMOJI_SUGGESTIONS = ["\uD83C\uDF1F","\uD83D\uDE4C","\uD83D\uDC4F","\uD83E\uDDD1\u200D\uD83D\uDE80","\uD83C\uDF08","\u26A1","\uD83D\uDCAB","\uD83C\uDF40","\uD83D\uDC51","\uD83C\uDFA8","\uD83E\uDD29","\uD83D\uDE0E","\uD83E\uDDB8","\uD83C\uDF97\uFE0F","\u2728","\uD83D\uDCDA","\uD83D\uDD27","\uD83C\uDFAF","\uD83D\uDEE1\uFE0F","\uD83C\uDF1E"];
+
+const STORAGE_KEY = "sticker_dashboard_data";
+
+const CONSENT_KEY = "sticker_dashboard_consent";
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { employees: [], awards: [], customStickers: [] };
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function hasConsent() {
+  return localStorage.getItem(CONSENT_KEY) === "true";
+}
+
+function giveConsent() {
+  localStorage.setItem(CONSENT_KEY, "true");
+}
+
+function clearAllData() {
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(CONSENT_KEY);
+}
+
+function exportData() {
+  const data = loadData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "sticker-dashboard-data.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function getInitials(name) {
+  return name.split(" ").map(n => n[0]).join("").toUpperCase();
+}
+
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return mins + "m ago";
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + "h ago";
+  return Math.floor(hrs / 24) + "d ago";
+}
+
+// ─── Components ──────────────────────────────
+
+function ConfettiBurst({ show }) {
+  if (!show) return null;
+  const colors = ["#6366f1","#ec4899","#f59e0b","#10b981","#8b5cf6","#f97316","#06b6d4"];
+  const pieces = Array.from({ length: 40 }, (_, i) => {
+    const left = 30 + Math.random() * 40;
+    const delay = Math.random() * 0.3;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const size = 6 + Math.random() * 8;
+    return (
+      <div key={i} className="confetti-piece" style={{
+        left: left + "%", top: "-10px",
+        width: size, height: size,
+        background: color,
+        animationDelay: delay + "s",
+        borderRadius: Math.random() > 0.5 ? "50%" : "2px",
+      }} />
+    );
+  });
+  return <div className="confetti-container">{pieces}</div>;
+}
+
+function Toast({ toast, onRemove }) {
+  useEffect(() => {
+    const t = setTimeout(() => onRemove(toast.id), 3000);
+    return () => clearTimeout(t);
+  }, [toast.id]);
+  return (
+    <div className={"toast " + (toast.leaving ? "leaving" : "")}>
+      <span className="toast-emoji">{toast.emoji}</span>
+      <div>
+        <div className="toast-text">{toast.label} sent!</div>
+        <div className="toast-sub">Awarded to {toast.recipient}{toast.teamsSent ? " \uD83D\uDFEA via Teams" : ""}</div>
+      </div>
+    </div>
+  );
+}
+
+function AddEmployeeModal({ onAdd, onCancel }) {
+  const [name, setName] = useState("");
+  const [role, setRole] = useState("");
+  const [email, setEmail] = useState("");
+  const nameRef = useRef(null);
+
+  useEffect(() => { nameRef.current && nameRef.current.focus(); }, []);
+
+  const canAdd = name.trim().length >= 2;
+
+  const handleSubmit = () => {
+    if (!canAdd) return;
+    const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
+    onAdd({
+      id: Date.now(),
+      name: name.trim(),
+      role: role.trim() || "Team Member",
+      email: email.trim(),
+      color,
+    });
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && canAdd) handleSubmit();
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onCancel}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>{"\uD83D\uDC64"} Add New Employee</h3>
+          <button className="modal-close" onClick={onCancel}>{"\u2715"}</button>
+        </div>
+        <div className="modal-body">
+          <div className="form-group">
+            <label>Full Name *</label>
+            <input ref={nameRef} className="form-input" placeholder="e.g. Anna Jensen"
+              value={name} onChange={e => setName(e.target.value)} onKeyDown={handleKeyDown} />
+          </div>
+          <div className="form-group">
+            <label>Role / Title</label>
+            <input className="form-input" placeholder="e.g. Frontend Developer"
+              value={role} onChange={e => setRole(e.target.value)} onKeyDown={handleKeyDown} />
+            <div className="form-hint">Defaults to "Team Member" if left empty</div>
+          </div>
+          <div className="form-group">
+            <label>Email Address</label>
+            <input className="form-input" type="email" placeholder="e.g. anna@company.dk"
+              value={email} onChange={e => setEmail(e.target.value)} onKeyDown={handleKeyDown} />
+            <div className="form-hint">Required for digital sticker delivery via Teams</div>
+          </div>
+        </div>
+        <div className="modal-actions">
+          <button className="modal-btn secondary" onClick={onCancel}>Cancel</button>
+          <button className="modal-btn primary" disabled={!canAdd} onClick={handleSubmit}>
+            {"\u2795"} Add Employee
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AddStickerModal({ onAdd, onCancel }) {
+  const [emoji, setEmoji] = useState("");
+  const [label, setLabel] = useState("");
+  const nameRef = useRef(null);
+
+  useEffect(() => { nameRef.current && nameRef.current.focus(); }, []);
+
+  const canAdd = emoji.trim().length > 0 && label.trim().length >= 2;
+
+  const handleSubmit = () => {
+    if (!canAdd) return;
+    onAdd({
+      id: "custom-" + Date.now(),
+      emoji: emoji.trim(),
+      label: label.trim(),
+      category: "custom",
+      custom: true,
+    });
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && canAdd) handleSubmit();
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onCancel}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>{"\uD83C\uDF1F"} Create New Sticker</h3>
+          <button className="modal-close" onClick={onCancel}>{"\u2715"}</button>
+        </div>
+        <div className="modal-body">
+          <div className="form-group">
+            <label>Emoji *</label>
+            <input ref={nameRef} className="form-input" placeholder="Paste or type an emoji..."
+              value={emoji} onChange={e => setEmoji(e.target.value)} onKeyDown={handleKeyDown}
+              style={{ fontSize: "1.5rem", textAlign: "center" }} />
+            <div className="form-hint" style={{ marginTop: 8 }}>
+              Pick one: {EMOJI_SUGGESTIONS.map(em => (
+                <span key={em} onClick={() => setEmoji(em)}
+                  style={{ cursor: "pointer", fontSize: "1.3rem", marginRight: 4, opacity: emoji === em ? 1 : 0.6, transition: "opacity 0.15s" }}
+                  onMouseOver={e => e.target.style.opacity = 1}
+                  onMouseOut={e => { if (emoji !== em) e.target.style.opacity = 0.6; }}
+                >{em}</span>
+              ))}
+            </div>
+          </div>
+          <div className="form-group">
+            <label>Sticker Name *</label>
+            <input className="form-input" placeholder="e.g. Problem Solver, Quick Learner..."
+              value={label} onChange={e => setLabel(e.target.value)} onKeyDown={handleKeyDown} />
+          </div>
+          {emoji && label.trim().length >= 2 && (
+            <div style={{ textAlign: "center", padding: "14px 0 4px" }}>
+              <div style={{ fontSize: "0.75rem", color: "#94a3b8", marginBottom: 6 }}>Preview</div>
+              <div style={{ display: "inline-block", border: "2px solid #e0e7ff", borderRadius: 12, padding: "14px 24px", background: "#fafbff" }}>
+                <div style={{ fontSize: "2rem" }}>{emoji}</div>
+                <div style={{ fontSize: "0.75rem", fontWeight: 600, marginTop: 4 }}>{label.trim()}</div>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="modal-actions">
+          <button className="modal-btn secondary" onClick={onCancel}>Cancel</button>
+          <button className="modal-btn primary" disabled={!canAdd} onClick={handleSubmit}>
+            {"\u2795"} Add Sticker
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TeamsPreviewModal({ emp, sticker, message, onConfirm, onCancel }) {
+  const firstName = emp.name.split(" ")[0];
+  return (
+    <div className="modal-overlay" onClick={onCancel}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>{"\uD83D\uDFEA"} Teams Message Preview</h3>
+          <button className="modal-close" onClick={onCancel}>{"\u2715"}</button>
+        </div>
+        <div className="modal-body">
+          <div className="email-preview">
+            <div className="ep-to">To: {emp.name} ({emp.email})</div>
+            <div className="ep-sticker">{sticker.emoji}</div>
+            <div className="ep-badge">{sticker.label}</div>
+            <div style={{ color: "#475569" }}>
+              Hi {firstName}, you've been recognised with a <strong>{sticker.label}</strong> sticker for your outstanding work!
+            </div>
+            {message && <div className="ep-msg">"{message}"</div>}
+            <div style={{ color: "#475569", marginTop: 12 }}>
+              Keep it up! {"\uD83C\uDF89"}
+            </div>
+          </div>
+        </div>
+        <div className="modal-actions">
+          <button className="modal-btn secondary" onClick={onCancel}>Cancel</button>
+          <button className="modal-btn primary" onClick={onConfirm} style={{ background: "linear-gradient(135deg, #6d28d9, #7c3aed)" }}>{"\uD83D\uDFEA"} Send via Teams & Award Sticker</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [data, setData] = useState(loadData);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [selectedSticker, setSelectedSticker] = useState(null);
+  const [message, setMessage] = useState("");
+  const [toasts, setToasts] = useState([]);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [sendTeams, setSendTeams] = useState(true);
+  const [showTeamsPreview, setShowTeamsPreview] = useState(false);
+  const [showAddEmployee, setShowAddEmployee] = useState(false);
+  const [showAddSticker, setShowAddSticker] = useState(false);
+  const [consented, setConsented] = useState(hasConsent);
+
+  const employees = data.employees || [];
+  const customStickers = data.customStickers || [];
+  const allStickers = [...DEFAULT_STICKERS, ...customStickers];
+
+  useEffect(() => { if (consented) saveData(data); }, [data, consented]);
+
+  // Parse all emoji characters into Twemoji (open-source) images after each render
+  useEffect(() => {
+    if (window.twemoji) {
+      window.twemoji.parse(document.body, { folder: "svg", ext: ".svg" });
+    }
+  });
+
+  const totalStickers = data.awards.length;
+  const uniqueRecipients = new Set(data.awards.map(a => a.employeeId)).size;
+  const teamsSent = data.awards.filter(a => a.teamsSent).length;
+
+  const getCount = (empId) => data.awards.filter(a => a.employeeId === empId).length;
+
+  const leaderboard = [...employees]
+    .map(e => ({ ...e, count: getCount(e.id) }))
+    .filter(e => e.count > 0)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 8);
+
+  const recentActivity = [...data.awards].reverse().slice(0, 15);
+
+  const selectedEmp = employees.find(e => e.id === selectedEmployee);
+  const selectedStk = allStickers.find(s => s.id === selectedSticker);
+
+  const handleAddEmployee = (emp) => {
+    setData(prev => ({
+      ...prev,
+      employees: [...(prev.employees || []), emp],
+    }));
+    setShowAddEmployee(false);
+  };
+
+  const handleDeleteEmployee = (empId, e) => {
+    e.stopPropagation();
+    if (!confirm("Remove this employee and all their sticker history? This cannot be undone.")) return;
+    if (selectedEmployee === empId) setSelectedEmployee(null);
+    setData(prev => ({
+      ...prev,
+      employees: (prev.employees || []).filter(emp => emp.id !== empId),
+      awards: (prev.awards || []).filter(a => a.employeeId !== empId),
+    }));
+  };
+
+  const handleAddSticker = (sticker) => {
+    setData(prev => ({
+      ...prev,
+      customStickers: [...(prev.customStickers || []), sticker],
+    }));
+    setShowAddSticker(false);
+  };
+
+  const handleDeleteSticker = (stickerId, e) => {
+    e.stopPropagation();
+    if (selectedSticker === stickerId) setSelectedSticker(null);
+    setData(prev => ({
+      ...prev,
+      customStickers: (prev.customStickers || []).filter(s => s.id !== stickerId),
+    }));
+  };
+
+  const doAward = (withTeams) => {
+    if (!selectedEmp || !selectedStk) return;
+    const firstName = selectedEmp.name.split(" ")[0];
+
+    const award = {
+      id: Date.now(),
+      employeeId: selectedEmployee,
+      employeeName: selectedEmp.name,
+      stickerId: selectedSticker,
+      stickerEmoji: selectedStk.emoji,
+      stickerLabel: selectedStk.label,
+      message: message.trim(),
+      timestamp: Date.now(),
+      teamsSent: withTeams,
+    };
+
+    setData(prev => ({
+      ...prev,
+      awards: [...prev.awards, award],
+    }));
+
+    if (withTeams && selectedEmp.email) {
+      const teamsMsg = selectedStk.emoji + " " + selectedStk.label + "!\n\nHi " + firstName + ", you've been recognised with a \"" + selectedStk.label + "\" sticker for your outstanding work!" + (message.trim() ? '\n\n"' + message.trim() + '"' : "") + "\n\nKeep it up! \uD83C\uDF89";
+      const teamsUrl = "https://teams.microsoft.com/l/chat/0/0?users=" + encodeURIComponent(selectedEmp.email) + "&message=" + encodeURIComponent(teamsMsg);
+      window.open(teamsUrl, "_blank");
+    }
+
+    setToasts(prev => [...prev, {
+      id: Date.now(),
+      emoji: selectedStk.emoji,
+      label: selectedStk.label,
+      recipient: selectedEmp.name,
+      teamsSent: withTeams,
+    }]);
+
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 1600);
+    setShowTeamsPreview(false);
+    setSelectedEmployee(null);
+    setSelectedSticker(null);
+    setMessage("");
+  };
+
+  const handleSend = useCallback(() => {
+    if (!selectedEmployee || !selectedSticker) return;
+    const emp = employees.find(e => e.id === selectedEmployee);
+    const wantTeams = sendTeams && emp && emp.email;
+    if (wantTeams) {
+      setShowTeamsPreview(true);
+    } else {
+      doAward(false);
+    }
+  }, [selectedEmployee, selectedSticker, message, sendTeams, employees]);
+
+  const handleConsent = () => {
+    giveConsent();
+    setConsented(true);
+  };
+
+  const handleDeclineConsent = () => {
+    clearAllData();
+    setConsented(false);
+    setData({ employees: [], awards: [], customStickers: [] });
+  };
+
+  const handleClearAllData = () => {
+    if (!confirm("Delete ALL data? This removes all employees, stickers, and history. This cannot be undone.")) return;
+    clearAllData();
+    setData({ employees: [], awards: [], customStickers: [] });
+    setConsented(false);
+  };
+
+  const handleExportData = () => {
+    exportData();
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.map(t => t.id === id ? { ...t, leaving: true } : t));
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 300);
+  };
+
+  const canSend = selectedEmployee && selectedSticker;
+
+  return (
+    <>
+      {/* GDPR Consent Banner */}
+      {!consented && (
+        <div className="consent-banner">
+          <div className="consent-text">
+            <strong>Data Storage Notice</strong><br/>
+            This dashboard stores employee names, roles, email addresses, and sticker history in your browser's local storage to function. No data is sent to external servers. You can export or delete all data at any time.
+          </div>
+          <div className="consent-actions">
+            <button className="consent-btn decline" onClick={handleDeclineConsent}>Decline</button>
+            <button className="consent-btn accept" onClick={handleConsent}>Accept & Continue</button>
+          </div>
+        </div>
+      )}
+
+      <ConfettiBurst show={showConfetti} />
+
+      <div className="toast-container">
+        {toasts.map(t => <Toast key={t.id} toast={t} onRemove={removeToast} />)}
+      </div>
+
+      {showAddEmployee && (
+        <AddEmployeeModal
+          onAdd={handleAddEmployee}
+          onCancel={() => setShowAddEmployee(false)}
+        />
+      )}
+
+      {showAddSticker && (
+        <AddStickerModal
+          onAdd={handleAddSticker}
+          onCancel={() => setShowAddSticker(false)}
+        />
+      )}
+
+      {showTeamsPreview && selectedEmp && selectedStk && (
+        <TeamsPreviewModal
+          emp={selectedEmp}
+          sticker={selectedStk}
+          message={message.trim()}
+          onConfirm={() => doAward(true)}
+          onCancel={() => setShowTeamsPreview(false)}
+        />
+      )}
+
+      {/* Header */}
+      <div className="header">
+        <div>
+          <h1>Sticker Appreciation Dashboard</h1>
+          <p>Recognize great work with fun stickers</p>
+        </div>
+        <div className="header-stats">
+          <div className="header-stat">
+            <div className="num">{totalStickers}</div>
+            <div className="label">Stickers Given</div>
+          </div>
+          <div className="header-stat">
+            <div className="num">{uniqueRecipients}</div>
+            <div className="label">People Recognised</div>
+          </div>
+          <div className="header-stat">
+            <div className="num">{teamsSent}</div>
+            <div className="label">Teams Sent</div>
+          </div>
+          <div className="header-stat">
+            <div className="num">{employees.length}</div>
+            <div className="label">Team Members</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Layout */}
+      <div className="layout">
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          {/* Employees */}
+          <div className="card">
+            <div className="card-header">
+              <span style={{ fontSize: "1.1rem" }}>{"\uD83D\uDC65"}</span> Select Employee
+            </div>
+            <div className="employee-grid">
+              {employees.map(emp => (
+                <div
+                  key={emp.id}
+                  className={"employee-card " + (selectedEmployee === emp.id ? "selected" : "")}
+                  onClick={() => setSelectedEmployee(selectedEmployee === emp.id ? null : emp.id)}
+                >
+                  <button className="delete-btn" title="Remove employee"
+                    onClick={(e) => handleDeleteEmployee(emp.id, e)}>{"\u2715"}</button>
+                  <div className="employee-avatar" style={{ background: emp.color }}>
+                    {getInitials(emp.name)}
+                  </div>
+                  <div className="employee-name">{emp.name}</div>
+                  <div className="employee-role">{emp.role}</div>
+                  {emp.email && <div className="employee-email">{emp.email}</div>}
+                  <div className="employee-sticker-count">
+                    {getCount(emp.id) > 0 && <>{"\u2B50"} {getCount(emp.id)} sticker{getCount(emp.id) !== 1 ? "s" : ""}</>}
+                  </div>
+                </div>
+              ))}
+              {/* Add Employee Card */}
+              <div className="add-employee-card" onClick={() => setShowAddEmployee(true)}>
+                <div className="add-icon">+</div>
+                <div className="add-label">Add Employee</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Stickers */}
+          <div className="card">
+            <div className="card-header">
+              <span style={{ fontSize: "1.1rem" }}>{"\uD83C\uDF1F"}</span> Choose a Sticker
+            </div>
+            <div className="sticker-section">
+              <div className="sticker-grid">
+                {allStickers.map(s => (
+                  <button
+                    key={s.id}
+                    className={"sticker-btn " + (selectedSticker === s.id ? "selected" : "")}
+                    onClick={() => setSelectedSticker(selectedSticker === s.id ? null : s.id)}
+                    style={{ position: "relative" }}
+                  >
+                    {s.custom && (
+                      <span className="delete-btn" style={{ position: "absolute", top: 4, right: 4, opacity: 0, width: 18, height: 18, fontSize: "0.65rem" }}
+                        onClick={(e) => handleDeleteSticker(s.id, e)}
+                        onMouseOver={e => e.target.style.opacity = 1}
+                        onMouseOut={e => e.target.style.opacity = 0}
+                      >{"\u2715"}</span>
+                    )}
+                    <span className="sticker-emoji">{s.emoji}</span>
+                    <span className="sticker-label">{s.label}</span>
+                  </button>
+                ))}
+                <button className="sticker-btn" onClick={() => setShowAddSticker(true)}
+                  style={{ border: "2px dashed #c7d2fe", background: "#fafbff" }}>
+                  <span className="sticker-emoji" style={{ opacity: 0.5 }}>+</span>
+                  <span className="sticker-label" style={{ color: "#6366f1" }}>Add Sticker</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Message & Send */}
+          <div className="card">
+            <div className="card-header">
+              <span style={{ fontSize: "1.1rem" }}>{"\u270D\uFE0F"}</span> Add a Message (optional)
+            </div>
+            <div className="message-section" style={{ paddingTop: 16 }}>
+              <textarea
+                className="message-input"
+                rows={2}
+                placeholder="Great job on the release! Keep it up..."
+                value={message}
+                onChange={e => setMessage(e.target.value)}
+              />
+            </div>
+            <div className="delivery-row">
+              <div className={"toggle-track " + (sendTeams ? "on" : "")} onClick={() => setSendTeams(!sendTeams)} style={sendTeams ? { background: "#7c3aed" } : {}}>
+                <div className="toggle-knob" />
+              </div>
+              <div>
+                <div className="toggle-label">
+                  {"\uD83D\uDFEA"} Deliver via Teams
+                  {selectedEmp && sendTeams && selectedEmp.email && (
+                    <span style={{ fontWeight: 400, fontSize: "0.78rem", color: "#64748b" }}>
+                      {"\u2192"} {selectedEmp.email}
+                    </span>
+                  )}
+                  {selectedEmp && sendTeams && !selectedEmp.email && (
+                    <span style={{ fontWeight: 400, fontSize: "0.78rem", color: "#ef4444" }}>
+                      (no email set)
+                    </span>
+                  )}
+                </div>
+                <div className="toggle-sub">{sendTeams ? "Opens a Teams chat with the sticker message" : "Sticker recorded on dashboard only"}</div>
+              </div>
+            </div>
+            <div className="send-section">
+              <button className="send-btn" disabled={!canSend} onClick={handleSend}>
+                {canSend
+                  ? (sendTeams && selectedEmp && selectedEmp.email ? "\uD83D\uDFEA Send" : "Give") + " " + (selectedStk ? selectedStk.emoji : "") + " to " + (selectedEmp ? selectedEmp.name : "")
+                  : employees.length === 0 ? "Add an employee to get started" : "Select an employee and sticker to send"
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div className="sidebar">
+          <div className="card">
+            <div className="card-header">
+              <span style={{ fontSize: "1.1rem" }}>{"\uD83C\uDFC6"}</span> Leaderboard
+            </div>
+            {leaderboard.length === 0 ? (
+              <div className="empty-state">
+                <div className="icon">{"\uD83C\uDFC5"}</div>
+                <div>{employees.length === 0 ? "Add employees to get started!" : "No stickers awarded yet.\nStart recognizing your team!"}</div>
+              </div>
+            ) : (
+              <div className="leaderboard-list">
+                {leaderboard.map((emp, i) => (
+                  <div className="leaderboard-item" key={emp.id}>
+                    <div className={"lb-rank " + (i === 0 ? "gold" : i === 1 ? "silver" : i === 2 ? "bronze" : "normal")}>
+                      {i + 1}
+                    </div>
+                    <div className="lb-avatar" style={{ background: emp.color }}>
+                      {getInitials(emp.name)}
+                    </div>
+                    <div className="lb-info">
+                      <div className="lb-name">{emp.name}</div>
+                    </div>
+                    <div className="lb-stickers">{emp.count} {"\u2B50"}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="card">
+            <div className="card-header">
+              <span style={{ fontSize: "1.1rem" }}>{"\uD83D\uDCCB"}</span> Recent Activity
+            </div>
+            {recentActivity.length === 0 ? (
+              <div className="empty-state">
+                <div className="icon">{"\uD83D\uDCED"}</div>
+                <div>No activity yet.{employees.length > 0 ? "\nAward your first sticker!" : ""}</div>
+              </div>
+            ) : (
+              <div className="activity-list">
+                {recentActivity.map(a => (
+                  <div className="activity-item" key={a.id}>
+                    <span className="activity-emoji">{a.stickerEmoji}</span>
+                    <div>
+                      <div className="activity-text">
+                        <strong>{a.employeeName}</strong> received <strong>{a.stickerLabel}</strong>
+                        {a.teamsSent && <span className="teams-badge">{"\uD83D\uDFEA"} Teams</span>}
+                      </div>
+                      {a.message && <div className="activity-msg">"{a.message}"</div>}
+                      <div className="activity-time">{timeAgo(a.timestamp)}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          {/* Data & Privacy */}
+          <div className="card">
+            <div className="card-header">
+              <span style={{ fontSize: "1.1rem" }}>{"\uD83D\uDD12"}</span> Data & Privacy
+            </div>
+            <div className="data-mgmt">
+              <button className="data-btn" onClick={handleExportData}>
+                {"\uD83D\uDCE5"} Export All Data (JSON)
+              </button>
+              <button className="data-btn danger" onClick={handleClearAllData}>
+                {"\uD83D\uDDD1\uFE0F"} Delete All Data
+              </button>
+              <div className="data-info">
+                All data is stored locally in your browser. Nothing is sent to external servers. Removing an employee also deletes their sticker history.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Attribution footer */}
+      <div className="attribution">
+        Emoji graphics by <a href="https://github.com/twitter/twemoji" target="_blank" rel="noopener">Twemoji</a> (Twitter/X) &mdash; licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>.
+        Font: <a href="https://rsms.me/inter/" target="_blank" rel="noopener">Inter</a> &mdash; <a href="https://openfontlicense.org/" target="_blank" rel="noopener">SIL Open Font License</a>.
+        Built with <a href="https://react.dev" target="_blank" rel="noopener">React</a> (MIT).
+      </div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("app")).render(<App />);
+</script>
+</body>
+</html>
