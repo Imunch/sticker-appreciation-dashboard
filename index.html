@@ -680,6 +680,245 @@
     .employee-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
     .login-card { padding: 36px 28px; }
   }
+
+  /* === Trajectory Modal === */
+  .traj-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 7px 14px;
+    width: 100%;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.2px;
+    box-shadow: 0 2px 6px rgba(79,70,229,0.25);
+    z-index: 2;
+    position: relative;
+  }
+  .traj-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79,70,229,0.4);
+  }
+  .traj-btn-icon { font-size: 0.95rem; }
+
+  .traj-modal {
+    width: 880px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .traj-header {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+  }
+  .traj-header::before {
+    content: "";
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+    border-radius: 50%;
+  }
+  .traj-avatar-big {
+    width: 68px; height: 68px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+    border: 3px solid rgba(255,255,255,0.4);
+    flex-shrink: 0;
+    z-index: 1;
+  }
+  .traj-header-info { z-index: 1; }
+  .traj-header-info h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
+  .traj-subtitle { font-size: 0.85rem; opacity: 0.85; }
+  .traj-status-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.22);
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 0.78rem; font-weight: 600;
+    margin-top: 10px;
+    backdrop-filter: blur(10px);
+  }
+  .traj-header-stats {
+    margin-left: auto;
+    text-align: right;
+    z-index: 1;
+  }
+  .traj-big-num {
+    font-size: 2.5rem; font-weight: 800; line-height: 1;
+  }
+  .traj-big-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.85;
+    margin-top: 4px;
+  }
+  .traj-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    width: 34px; height: 34px;
+    border: none;
+    background: rgba(255,255,255,0.25);
+    color: white;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .traj-close:hover { background: rgba(255,255,255,0.4); }
+
+  .traj-section {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .traj-section:last-of-type { border-bottom: none; }
+  .traj-section-title {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin: 0 0 16px;
+  }
+  .traj-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .traj-range-toggle {
+    display: inline-flex;
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .traj-range-toggle button {
+    border: none;
+    background: transparent;
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .traj-range-toggle button.active {
+    background: white;
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .traj-chart-wrap {
+    background: linear-gradient(to bottom, #fafbfc, #f7fafc);
+    border-radius: 12px;
+    padding: 18px 14px 8px;
+    border: 1px solid var(--border);
+    position: relative;
+  }
+  .traj-chart-svg { width: 100%; height: 220px; display: block; }
+  .traj-chart-x-labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-top: 4px;
+  }
+  .traj-empty-chart {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .traj-milestone-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  .traj-milestone {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    position: relative;
+  }
+  .traj-milestone.unlocked {
+    background: linear-gradient(135deg, #fefcbf 0%, #fff5d7 100%);
+    border-color: #fcd34d;
+  }
+  .traj-milestone-icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .traj-milestone.locked .traj-milestone-icon { filter: grayscale(1); opacity: 0.4; }
+  .traj-milestone-title { font-size: 0.8rem; font-weight: 600; margin-bottom: 2px; color: var(--text); }
+  .traj-milestone.locked .traj-milestone-title { color: #94a3b8; }
+  .traj-milestone-sub { font-size: 0.7rem; color: var(--text-muted); }
+  .traj-milestone-check {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 20px; height: 20px;
+    background: var(--success);
+    border-radius: 50%;
+    color: white;
+    font-size: 0.7rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .traj-mix-wrap {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+  .traj-donut-wrap { position: relative; width: 200px; height: 200px; }
+  .traj-donut-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .traj-donut-num { font-size: 2rem; font-weight: 700; color: var(--text); }
+  .traj-donut-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+  .traj-mix-list { display: flex; flex-direction: column; gap: 10px; }
+  .traj-mix-row { display: flex; align-items: center; gap: 12px; }
+  .traj-mix-emoji { font-size: 1.4rem; width: 34px; text-align: center; }
+  .traj-mix-bar-wrap { flex: 1; height: 8px; background: #edf2f7; border-radius: 4px; overflow: hidden; }
+  .traj-mix-bar { height: 100%; border-radius: 4px; }
+  .traj-mix-count { width: 36px; text-align: right; font-size: 0.8rem; font-weight: 600; color: var(--text); }
+  .traj-mix-label { width: 130px; font-size: 0.8rem; color: var(--text); }
+
+  .traj-empty {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--text-muted);
+  }
+  .traj-empty-icon { font-size: 2.5rem; margin-bottom: 10px; opacity: 0.5; }
+
+  .traj-footer {
+    display: flex;
+    gap: 10px;
+    padding: 18px 32px;
+    background: #f8fafc;
+    border-top: 1px solid var(--border);
+  }
 </style>
 </head>
 <body>
@@ -1022,6 +1261,277 @@ function TeamsPreviewModal({ emp, sticker, message, onConfirm, onCancel }) {
   );
 }
 
+function TrajectoryModal({ emp, awards, onClose, onAward, onToast }) {
+  const [range, setRange] = useState(90);
+
+  const empAwards = awards
+    .filter(a => a.employeeId === emp.id)
+    .sort((x, y) => new Date(x.timestamp) - new Date(y.timestamp));
+
+  const total = empAwards.length;
+  const now = Date.now();
+  const rangeMs = range === 0 ? Infinity : range * 24 * 60 * 60 * 1000;
+  const inRange = empAwards.filter(a => now - new Date(a.timestamp).getTime() <= rangeMs);
+
+  // Status badge
+  const last30 = empAwards.filter(a => now - new Date(a.timestamp).getTime() <= 30 * 86400000).length;
+  const prev30 = empAwards.filter(a => {
+    const diff = now - new Date(a.timestamp).getTime();
+    return diff > 30 * 86400000 && diff <= 60 * 86400000;
+  }).length;
+  const daysSinceLast = empAwards.length > 0
+    ? Math.floor((now - new Date(empAwards[empAwards.length - 1].timestamp).getTime()) / 86400000)
+    : null;
+
+  let status = { icon: "\uD83C\uDF31", label: "Just getting started" };
+  if (total === 0) status = { icon: "\u2728", label: "No stickers yet" };
+  else if (daysSinceLast !== null && daysSinceLast > 30) status = { icon: "\uD83D\uDCA4", label: "Quiet lately" };
+  else if (last30 > prev30 && last30 >= 3) status = { icon: "\uD83D\uDE80", label: `Rising \u2014 ${last30} stickers in the last 30 days` };
+  else if (last30 >= 3) status = { icon: "\uD83D\uDD25", label: `On a streak \u2014 ${last30} recent stickers` };
+  else if (total >= 5) status = { icon: "\u2B50", label: "Consistent" };
+
+  // First award date
+  const firstDate = empAwards.length > 0 ? new Date(empAwards[0].timestamp) : null;
+  const weeksSince = firstDate ? Math.max(1, Math.floor((now - firstDate.getTime()) / (7 * 86400000))) : 0;
+
+  // Timeline points
+  const chartW = 780, chartH = 220, padL = 40, padR = 20, padT = 20, padB = 40;
+  const innerW = chartW - padL - padR;
+  const innerH = chartH - padT - padB;
+
+  let pathD = "", areaD = "", markers = [];
+  if (inRange.length > 0) {
+    const startT = range === 0
+      ? new Date(empAwards[0].timestamp).getTime()
+      : now - rangeMs;
+    const endT = now;
+    const span = Math.max(1, endT - startT);
+    const maxY = Math.max(5, inRange.length + 1);
+    const yFor = (count) => padT + innerH - (count / maxY) * innerH;
+    const xFor = (t) => padL + ((t - startT) / span) * innerW;
+
+    let points = [[padL, padT + innerH]];
+    let cum = 0;
+    inRange.forEach((a) => {
+      const t = new Date(a.timestamp).getTime();
+      const x = xFor(t);
+      // step: go right at old y, then jump up
+      const prevY = yFor(cum);
+      cum += 1;
+      const newY = yFor(cum);
+      points.push([x, prevY]);
+      points.push([x, newY]);
+      markers.push({ x, y: newY, emoji: a.stickerEmoji || "\u2B50", label: a.stickerLabel || "Sticker", message: a.message || "", date: new Date(a.timestamp) });
+    });
+    // extend to "now" at final y
+    points.push([padL + innerW, yFor(cum)]);
+
+    pathD = points.map((p, i) => (i === 0 ? `M${p[0]},${p[1]}` : `L${p[0]},${p[1]}`)).join(" ");
+    areaD = pathD + ` L${padL + innerW},${padT + innerH} L${padL},${padT + innerH} Z`;
+  }
+
+  // Milestones
+  const uniqueStickers = new Set(empAwards.map(a => a.stickerId || a.stickerEmoji)).size;
+  const teamsShared = empAwards.filter(a => a.teamsSent).length;
+  const hasPro = empAwards.some(a => {
+    const sid = (a.stickerId || "").toLowerCase();
+    const lbl = (a.stickerLabel || "").toLowerCase();
+    return ["top-achiever", "big-brain-move", "bullseye", "powerhouse", "above-beyond"].includes(sid)
+      || /achiever|brain|bullseye|powerhouse|above/.test(lbl);
+  });
+
+  const milestones = [
+    { icon: "\uD83C\uDF89", title: "First sticker", sub: firstDate ? `${weeksSince} week${weeksSince !== 1 ? "s" : ""} ago` : "Not yet", unlocked: total >= 1 },
+    { icon: "\uD83D\uDD90\uFE0F", title: "5 Sticker Club", sub: total >= 5 ? "Unlocked" : `${5 - total} to go`, unlocked: total >= 5 },
+    { icon: "\uD83C\uDFC6", title: "10 Sticker Club", sub: total >= 10 ? "Unlocked" : `${10 - total} to go`, unlocked: total >= 10 },
+    { icon: "\uD83C\uDF08", title: "Variety Pack", sub: uniqueStickers >= 5 ? `${uniqueStickers} different types` : `${5 - uniqueStickers} more types`, unlocked: uniqueStickers >= 5 },
+    { icon: "\uD83D\uDCBC", title: "First Pro Sticker", sub: hasPro ? "Unlocked" : "Not yet", unlocked: hasPro },
+    { icon: "\uD83C\uDF96\uFE0F", title: "25 Sticker Club", sub: total >= 25 ? "Unlocked" : `${25 - total} to go`, unlocked: total >= 25 },
+    { icon: "\uD83D\uDCE3", title: "Teams Ambassador", sub: teamsShared >= 10 ? "Unlocked" : `${10 - teamsShared} more shared`, unlocked: teamsShared >= 10 },
+    { icon: "\uD83C\uDF1F", title: "50 Sticker Club", sub: total >= 50 ? "Unlocked" : `${50 - total} to go`, unlocked: total >= 50 },
+  ];
+
+  // Mix
+  const mixMap = {};
+  empAwards.forEach(a => {
+    const key = (a.stickerLabel || "Sticker") + "|" + (a.stickerEmoji || "\u2B50");
+    mixMap[key] = (mixMap[key] || 0) + 1;
+  });
+  const mixItems = Object.entries(mixMap)
+    .map(([k, count]) => {
+      const [label, emoji] = k.split("|");
+      return { label, emoji, count };
+    })
+    .sort((a, b) => b.count - a.count);
+  const maxMix = mixItems.length > 0 ? mixItems[0].count : 1;
+  const mixColors = ["#ef4444", "#4f46e5", "#10b981", "#f59e0b", "#14b8a6", "#8b5cf6", "#ec4899", "#6366f1"];
+
+  const handleCopy = () => {
+    const summary = `${emp.name} has ${total} sticker${total !== 1 ? "s" : ""}` +
+      (firstDate ? ` across ${weeksSince} week${weeksSince !== 1 ? "s" : ""}` : "") +
+      `, currently ${status.icon} ${status.label}.`;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(summary).then(() => {
+        if (onToast) onToast("Summary copied to clipboard!");
+      }).catch(() => {
+        if (onToast) onToast("Could not copy. Try again.");
+      });
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal traj-modal" onClick={e => e.stopPropagation()}>
+        <button className="traj-close" onClick={onClose}>{"\u2715"}</button>
+
+        {/* Header */}
+        <div className="traj-header">
+          <div className="traj-avatar-big" style={{ background: emp.color }}>
+            {getInitials(emp.name)}
+          </div>
+          <div className="traj-header-info">
+            <h2>{emp.name}</h2>
+            <div className="traj-subtitle">
+              {emp.role}
+              {firstDate && <> · Started receiving stickers {weeksSince} week{weeksSince !== 1 ? "s" : ""} ago</>}
+            </div>
+            <div className="traj-status-badge">{status.icon} {status.label}</div>
+          </div>
+          <div className="traj-header-stats">
+            <div className="traj-big-num">{total}</div>
+            <div className="traj-big-label">Total stickers</div>
+          </div>
+        </div>
+
+        {/* Sticker Trajectory */}
+        <div className="traj-section">
+          <div className="traj-section-header">
+            <h3 className="traj-section-title">{"\uD83C\uDFAF"} Sticker trajectory</h3>
+            <div className="traj-range-toggle">
+              <button className={range === 30 ? "active" : ""} onClick={() => setRange(30)}>30d</button>
+              <button className={range === 90 ? "active" : ""} onClick={() => setRange(90)}>90d</button>
+              <button className={range === 0 ? "active" : ""} onClick={() => setRange(0)}>All</button>
+            </div>
+          </div>
+
+          {inRange.length === 0 ? (
+            <div className="traj-empty-chart">
+              <div className="traj-empty-icon">{"\uD83D\uDCCA"}</div>
+              <div>No stickers in this time range yet.</div>
+            </div>
+          ) : (
+            <div className="traj-chart-wrap">
+              <svg className="traj-chart-svg" viewBox={`0 0 ${chartW} ${chartH}`} preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="trajAreaGrad" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stopColor="#4f46e5" />
+                    <stop offset="100%" stopColor="#4f46e5" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+                {[0.25, 0.5, 0.75, 1].map(f => (
+                  <line key={f} x1={padL} y1={padT + innerH * f} x2={chartW - padR} y2={padT + innerH * f}
+                    stroke="#e2e8f0" strokeDasharray="3,3" />
+                ))}
+                <path d={areaD} fill="url(#trajAreaGrad)" opacity="0.3" />
+                <path d={pathD} fill="none" stroke="#4f46e5" strokeWidth="2.5" strokeLinejoin="round" />
+                {markers.map((m, i) => (
+                  <text key={i} x={m.x} y={m.y - 6} fontSize="16" textAnchor="middle">{m.emoji}</text>
+                ))}
+                {markers.length > 0 && (
+                  <circle cx={markers[markers.length - 1].x} cy={markers[markers.length - 1].y - 2} r="14" fill="none" stroke="#f59e0b" strokeWidth="2" opacity="0.8">
+                    <animate attributeName="r" from="12" to="18" dur="1.5s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" from="0.8" to="0" dur="1.5s" repeatCount="indefinite" />
+                  </circle>
+                )}
+              </svg>
+              <div className="traj-chart-x-labels">
+                <span>{range === 0 && firstDate ? firstDate.toLocaleDateString(undefined, { month: "short", day: "numeric" }) : (range === 30 ? "30 days ago" : "90 days ago")}</span>
+                <span>Today</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Milestones */}
+        <div className="traj-section">
+          <h3 className="traj-section-title">{"\uD83C\uDFC5"} Milestones</h3>
+          <div className="traj-milestone-grid">
+            {milestones.map((m, i) => (
+              <div key={i} className={"traj-milestone " + (m.unlocked ? "unlocked" : "locked")}>
+                {m.unlocked && <div className="traj-milestone-check">{"\u2713"}</div>}
+                <div className="traj-milestone-icon">{m.icon}</div>
+                <div className="traj-milestone-title">{m.title}</div>
+                <div className="traj-milestone-sub">{m.sub}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Mix */}
+        <div className="traj-section">
+          <h3 className="traj-section-title">{"\uD83C\uDFA8"} Sticker mix</h3>
+          {mixItems.length === 0 ? (
+            <div className="traj-empty">
+              <div className="traj-empty-icon">{"\uD83C\uDF1F"}</div>
+              <div>No stickers received yet {"\u2014"} be the first to recognize {emp.name.split(" ")[0]}!</div>
+            </div>
+          ) : (
+            <div className="traj-mix-wrap">
+              <div className="traj-donut-wrap">
+                <svg viewBox="0 0 42 42" width="200" height="200">
+                  <circle cx="21" cy="21" r="15.9" fill="none" stroke="#edf2f7" strokeWidth="4" />
+                  {(() => {
+                    let offset = 25;
+                    const slices = [];
+                    mixItems.forEach((m, i) => {
+                      const pct = (m.count / total) * 100;
+                      slices.push(
+                        <circle key={i} cx="21" cy="21" r="15.9" fill="none"
+                          stroke={mixColors[i % mixColors.length]} strokeWidth="4"
+                          strokeDasharray={`${pct} ${100 - pct}`} strokeDashoffset={offset} />
+                      );
+                      offset = offset - pct;
+                      if (offset < 0) offset += 100;
+                    });
+                    return slices;
+                  })()}
+                </svg>
+                <div className="traj-donut-center">
+                  <div className="traj-donut-num">{mixItems.length}</div>
+                  <div className="traj-donut-label">Type{mixItems.length !== 1 ? "s" : ""}</div>
+                </div>
+              </div>
+              <div className="traj-mix-list">
+                {mixItems.slice(0, 6).map((m, i) => (
+                  <div key={i} className="traj-mix-row">
+                    <div className="traj-mix-emoji">{m.emoji}</div>
+                    <div className="traj-mix-label">{m.label}</div>
+                    <div className="traj-mix-bar-wrap">
+                      <div className="traj-mix-bar" style={{ width: `${(m.count / maxMix) * 100}%`, background: mixColors[i % mixColors.length] }}></div>
+                    </div>
+                    <div className="traj-mix-count">{m.count}{"\u00D7"}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="traj-footer">
+          <button className="modal-btn primary" onClick={() => { onAward(emp.id); onClose(); }}>
+            {"\uD83C\uDFC5"} Award a new sticker
+          </button>
+          <button className="modal-btn secondary" onClick={handleCopy}>
+            {"\uD83D\uDCCB"} Copy summary
+          </button>
+          <button className="modal-btn secondary" style={{ marginLeft: "auto" }} onClick={onClose}>Close</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // --- Authentication ---
 const AUTH_KEY = "sticker_dashboard_auth";
 const VALID_USER = "HRfun";
@@ -1087,6 +1597,7 @@ function App({ onLogout }) {
   const [showTeamsPreview, setShowTeamsPreview] = useState(false);
   const [showAddEmployee, setShowAddEmployee] = useState(false);
   const [showAddSticker, setShowAddSticker] = useState(false);
+  const [trajectoryEmpId, setTrajectoryEmpId] = useState(null);
   const [consented, setConsented] = useState(hasConsent);
 
   const employees = data.employees || [];
@@ -1296,6 +1807,20 @@ function App({ onLogout }) {
         />
       )}
 
+      {trajectoryEmpId && (() => {
+        const trajEmp = employees.find(e => e.id === trajectoryEmpId);
+        if (!trajEmp) return null;
+        return (
+          <TrajectoryModal
+            emp={trajEmp}
+            awards={data.awards}
+            onClose={() => setTrajectoryEmpId(null)}
+            onAward={(empId) => setSelectedEmployee(empId)}
+            onToast={(msg) => setToasts(prev => [...prev, { id: Date.now(), emoji: "\uD83D\uDCCB", label: "Copied", recipient: msg, message: "" }])}
+          />
+        );
+      })()}
+
       {/* Header */}
       <div className="header">
         <div>
@@ -1349,6 +1874,10 @@ function App({ onLogout }) {
                   <div className="employee-sticker-count">
                     {getCount(emp.id) > 0 && <>{"\u2B50"} {getCount(emp.id)} sticker{getCount(emp.id) !== 1 ? "s" : ""}</>}
                   </div>
+                  <button className="traj-btn" title="View Sticker trajectory"
+                    onClick={(e) => { e.stopPropagation(); setTrajectoryEmpId(emp.id); }}>
+                    <span className="traj-btn-icon">{"\uD83D\uDCC8"}</span> View Trajectory
+                  </button>
                 </div>
               ))}
               {/* Add Employee Card */}
